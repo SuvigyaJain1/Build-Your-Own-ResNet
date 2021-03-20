@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-class Resnet:
+class ResnetBase:
 
     '''
     INITIALISER
@@ -17,28 +17,32 @@ class Resnet:
 
 
     '''
-    ADD_IDENTITY_BLOCK
+    ADD_IDENTITY_BLOCK (RESIDUAL_BLOCK)
     Creates and Adds identity block to the network. The first and the last layers in this block are connected
     by an X_shortcut. It takes a list of the intermediate layers as input.
     These layers should belong to keras.layers
     '''
-    def add_identity_block(self, layers):
+    def add_identity_block(self, layers, activation=self.activation):
 
         X_shortcut = self.X
         for layer in layers:
             self.X = layer(self.X)
+            self.X = activation(self.X)
+
         self.X = tf.keras.layers.Add()([self.X, X_shortcut])
-        self.X = self.activation(self.X)
+        self.X = activation(self.X)
 
 
     '''
     ADD_LAYERS
     Adds layers to the model. Accepts a list of layers as input.
     '''
-    def add(self, layers):
+    def add(self, layers, activation=self.activation):
+        if type(layers) is not list and type(layers) == tf.keras.layer:
+            layers = [layers]
         for layer in layers:
             self.X = layer(self.X)
-        self.X = self.activation(self.X)
+            self.X = activation(self.X)
 
     '''
     returns a keras model which needs to be compiled, fit and tested similar to any inbuilt keras model.

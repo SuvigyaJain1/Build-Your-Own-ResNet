@@ -1,8 +1,8 @@
 # Build-Your-Own-ResNet
-Implement your own state of the art ResNet architectures with a simple to use keras-like High-Level API 
+Implement your own state of the art ResNet architectures with a simple to use keras-based High-Level API 
 
 # Dependencies
-```pip install tensorlfow```
+```pip install tensorflow```
 
 # How to use
 1. Download the ResNet.py file and move it into working directory
@@ -34,5 +34,5 @@ model = resnet.build_model()
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
 #fit model
-hisotry = model.fit(X, y, epochs=100, batch_size=32)
+history = model.fit(X, y, epochs=100, batch_size=32)
 ```
