@@ -7,32 +7,40 @@ Implement your own state of the art ResNet architectures with a simple to use ke
 # How to use
 1. Download the ResNet.py file and move it into working directory
 
+
+## Resnet-18 implementation
 ```python
-import ResNet
-import tensorflow as tf
+from './ResNet' import ResnetBase
+from keras import activations, layers
 
-resnet = ResNet.Resnet(input_shape=(28, 28, 3))
-resnet.add([
-  tf.keras.layers.Conv2D(16, (1, 1), padding='valid'),
-  # Similarly add as many layers as needed
+model = ResnetBase((32,32,3), activations.relu)
+
+model.add([
+           layers.Conv2D(kernel_size=(7,7), strides=(1,1), filters=64, padding="same"),
+           layers.BatchNormalization(),
+           layers.MaxPooling2D(pool_size=(2,2))
+           ], activation=tf.keras.activations.relu)
+
+model.add_conv_bn_block(filters=[64, 64], strides=(1,1), kernel_sizes=[(3,3), (3,3)])
+model.add_conv_bn_block(filters=[64, 64], strides=(1,1), kernel_sizes=[(3,3), (3,3)])
+model.add_conv_bn_block(filters=[128, 128], strides=(1,1), kernel_sizes=[(3,3), (3,3)])
+model.add_conv_bn_block(filters=[128, 128], strides=(1,1), kernel_sizes=[(3,3), (3,3)])
+model.add_conv_bn_block(filters=[256, 256], strides=(2,2), kernel_sizes=[(3,3), (3,3)])
+model.add_conv_bn_block(filters=[256, 256], strides=(1,1), kernel_sizes=[(3,3), (3,3)])
+model.add_conv_bn_block(filters=[512, 512], strides=(2,2), kernel_sizes=[(3,3), (3,3)])
+model.add_conv_bn_block(filters=[512, 512], strides=(1,1), kernel_sizes=[(3,3), (3,3)])
+
+
+model.add([
+           layers.AveragePooling2D(pool_size=(4,4)),
+           layers.Flatten(),
+           layers.Dense(10),
+           layers.Softmax()
 ])
 
-resnet.add_identity_block([
-  # List all layers to be connected by a shortcut.
-])
+m = model.build_model()
+m.summary()
 
-resnet.add([
-  tf.keras.layers.Dense(2, activation='softmax')
-])
-
-#above steps can be repeated endlessly to add as many layers and identity blocks as required
-
-#build the model. You now have a keras model you can use as you please
-model = resnet.build_model()
-
-# compile model
-model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-
-#fit model
-history = model.fit(X, y, epochs=100, batch_size=32)
+m.compile(optimizer="adam", loss="categorical_crossentropy", metrics=['accuracy'])
+# history = m.fit(X_train, y_train, epochs=20)
 ```
